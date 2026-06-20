@@ -55,25 +55,6 @@ async function authRequest(endpoint, body) {
   return data;
 }
 
-function VLLogo({ size = 36 }) {
-  return (
-    <div style={{ width:size, height:size, background:"#09090C", borderRadius:8,
-      display:"flex", alignItems:"center", justifyContent:"center",
-      border:"1px solid rgba(108,99,255,0.4)", flexShrink:0 }}>
-      <svg viewBox="0 0 56 40" fill="none" width={size*0.82} height={size*0.6}>
-        <polygon points="2,2 10,2 22,34 14,34" fill="#F0EDE6"/>
-        <polygon points="30,2 38,2 26,34 18,34" fill="#F0EDE6"/>
-        <polygon points="22,34 14,34 22,16 30,34" fill="#09090C"/>
-        <ellipse cx="22" cy="33" rx="6" ry="2.5" fill="rgba(108,99,255,0.3)"/>
-        <polygon points="19,18 17,26 21,26" fill="#3A3060"/>
-        <polygon points="22,15 20,24 24,24" fill="#4A3E80" opacity="0.9"/>
-        <polygon points="25,18 23,26 27,26" fill="#3A3060"/>
-        <polygon points="42,2 50,2 50,36 42,36" fill="#F0EDE6"/>
-        <polygon points="42,36 56,36 56,30 42,30" fill="#F0EDE6"/>
-      </svg>
-    </div>
-  );
-}
 
 function LogoAvatar({ domain, name, size = 44 }) {
   const [err, setErr] = useState(false);
