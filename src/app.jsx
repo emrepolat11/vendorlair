@@ -362,14 +362,14 @@ function AuthScreen({ onAuth }) {
         background:"rgba(9,9,12,0.75)", backdropFilter:"blur(16px)",
         borderBottom:"1px solid rgba(255,255,255,0.07)", zIndex:100 }}>
         <a href="/" style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none" }}>
-          <VLLogo size={32} />
+         
           <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:700,
             color:"#F0EDE6", letterSpacing:"0.5px" }}>VendorLair</span>
         </a>
       </div>
       <div style={{ width:"100%", maxWidth:400, marginTop:60 }}>
         <div style={{ textAlign:"center", marginBottom:32 }}>
-          <VLLogo size={52} />
+          
           <div style={{ fontFamily:"'Cormorant Garamond',serif", fontWeight:700, fontSize:28,
             color:"#F0EDE6", letterSpacing:"-0.02em", marginTop:16 }}>
             {mode==="login" ? "Welcome back" : "Create account"}
@@ -547,7 +547,7 @@ function Dashboard({ token, user, onLogout }) {
         justifyContent:"space-between", position:"sticky", top:0, zIndex:100,
         backdropFilter:"blur(16px)" }}>
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <VLLogo size={32} />
+          
           <div style={{ fontFamily:"'Cormorant Garamond',serif", fontWeight:700,
             fontSize:18, color:"#F0EDE6", letterSpacing:"0.5px" }}>VendorLair</div>
         </div>
