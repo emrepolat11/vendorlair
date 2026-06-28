@@ -513,7 +513,8 @@ function AuthScreen({ onAuth }) {
 
 // ── Upgrade Modal ──────────────────────────────────────────────────────────
 
-function UpgradeModal({ onClose }) {
+function UpgradeModal({ onClose, trigger }) {
+  const hitLimit = trigger === "limit";
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: 20, backdropFilter: "blur(8px)" }}
       onClick={e => e.target === e.currentTarget && onClose()}>
@@ -521,7 +522,9 @@ function UpgradeModal({ onClose }) {
         <div style={{ fontSize: 38, marginBottom: 14 }}>⚡</div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 26, color: "#F0EDE6", marginBottom: 8 }}>Upgrade to Pro</div>
         <div style={{ fontSize: 14, color: "rgba(240,237,230,0.45)", fontWeight: 300, marginBottom: 22, lineHeight: 1.7 }}>
-          You've hit the 10 vendor limit. Upgrade for unlimited vendors and full access.
+          {hitLimit
+            ? "You've reached the 10 vendor limit on the free plan. Upgrade to add unlimited vendors."
+            : "Get unlimited vendors and full access for just $3/month. Cancel anytime."}
         </div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 44, color: "#F0EDE6", marginBottom: 4 }}>
           $3<span style={{ fontSize: 18, color: "rgba(240,237,230,0.4)", fontWeight: 400 }}>/month</span>
@@ -549,7 +552,7 @@ function Dashboard({ token, user, onLogout }) {
   const [editing, setEditing]       = useState(null);
   const [filterCat, setFilterCat]   = useState("All");
   const [search, setSearch]         = useState("");
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(null); // "voluntary" | "limit" | null
   const [isPro, setIsPro]           = useState(false);
   const userId = user?.id;
 
@@ -565,7 +568,7 @@ function Dashboard({ token, user, onLogout }) {
   };
 
   const saveVendor = async (form) => {
-    if (!isPro && !editing && vendors.length >= FREE_LIMIT) { setShowUpgrade(true); return; }
+    if (!isPro && !editing && vendors.length >= FREE_LIMIT) { setShowUpgrade("limit"); return; }
     setSaving(true);
     try {
       if (editing) {
@@ -587,7 +590,7 @@ function Dashboard({ token, user, onLogout }) {
   };
 
   const openAdd = () => {
-    if (!isPro && vendors.length >= FREE_LIMIT) { setShowUpgrade(true); return; }
+    if (!isPro && vendors.length >= FREE_LIMIT) { setShowUpgrade("limit"); return; }
     setEditing(null); setShowModal(true);
   };
 
@@ -624,7 +627,7 @@ function Dashboard({ token, user, onLogout }) {
             {vendors.length} vendor{vendors.length !== 1 ? "s" : ""} · {isPro ? "Pro" : "Free"}
           </span>
           {!isPro && (
-            <button onClick={() => setShowUpgrade(true)} style={{ background: "transparent", border: "1px solid rgba(108,99,255,0.35)", color: "#A89FFF", padding: "6px 13px", borderRadius: 7, fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>⚡ Upgrade</button>
+            <button onClick={() => setShowUpgrade("voluntary")} style={{ background: "transparent", border: "1px solid rgba(108,99,255,0.35)", color: "#A89FFF", padding: "6px 13px", borderRadius: 7, fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>⚡ Upgrade</button>
           )}
           <button onClick={openAdd} style={{ background: "#6C63FF", border: "none", color: "#fff", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: "pointer", boxShadow: "0 3px 12px rgba(108,99,255,0.35)" }}>+ Add vendor</button>
           <button onClick={onLogout} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(240,237,230,0.3)", padding: "6px 13px", borderRadius: 7, fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>Log out</button>
@@ -670,7 +673,7 @@ function Dashboard({ token, user, onLogout }) {
           </div>
         )}
 
-        {atLimit && <UpgradeBanner onUpgrade={() => setShowUpgrade(true)} />}
+        {atLimit && <UpgradeBanner onUpgrade={() => setShowUpgrade("limit")} />}
 
         {loading ? (
           <div style={{ textAlign: "center", padding: "80px 20px", color: "rgba(240,237,230,0.3)" }}>
@@ -712,7 +715,7 @@ function Dashboard({ token, user, onLogout }) {
       {showModal && (
         <VendorModal vendor={editing} onClose={() => { setShowModal(false); setEditing(null); }} onSave={saveVendor} loading={saving} />
       )}
-      {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+      {showUpgrade && <UpgradeModal trigger={showUpgrade} onClose={() => setShowUpgrade(null)} />}
     </div>
   );
 }
