@@ -1,6 +1,27 @@
 import { useState, useEffect } from "react";
 
 const FREE_LIMIT = 10;
+
+const COUNTRIES = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia",
+  "Austria","Azerbaijan","Bahrain","Bangladesh","Belarus","Belgium","Belize","Benin",
+  "Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso",
+  "Cambodia","Cameroon","Canada","Chile","China","Colombia","Congo","Costa Rica","Croatia",
+  "Cuba","Cyprus","Czech Republic","Denmark","Dominican Republic","Ecuador","Egypt",
+  "El Salvador","Estonia","Ethiopia","Finland","France","Georgia","Germany","Ghana","Greece",
+  "Guatemala","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland",
+  "Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kosovo","Kuwait",
+  "Kyrgyzstan","Latvia","Lebanon","Libya","Liechtenstein","Lithuania","Luxembourg","Malaysia",
+  "Malta","Mexico","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar",
+  "Nepal","Netherlands","New Zealand","Nicaragua","Nigeria","North Macedonia","Norway","Oman",
+  "Pakistan","Palestine","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Qatar",
+  "Romania","Russia","Rwanda","Saudi Arabia","Senegal","Serbia","Singapore","Slovakia",
+  "Slovenia","Somalia","South Africa","South Korea","Spain","Sri Lanka","Sudan","Sweden",
+  "Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Tunisia","Turkey",
+  "Turkmenistan","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States",
+  "Uruguay","Uzbekistan","Venezuela","Vietnam","Yemen","Zimbabwe",
+];
+
 const CATEGORIES = [
   { label: "Marketing",            emoji: "📣" },
   { label: "Finance",              emoji: "💰" },
@@ -342,7 +363,22 @@ function VendorModal({ vendor, onClose, onSave, loading }) {
           </div>
           <div>
             <label style={lbl}>Country</label>
-            <input style={inp} value={form.country} onChange={e => set("country", e.target.value)} onFocus={focus} onBlur={blur} placeholder="Germany" />
+            <select
+              value={form.country}
+              onChange={e => set("country", e.target.value)}
+              onFocus={focus}
+              onBlur={blur}
+              style={{ ...inp, appearance: "none", WebkitAppearance: "none", cursor: "pointer",
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(240,237,230,0.3)' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center",
+                paddingRight: 32,
+              }}
+            >
+              <option value="" style={{ background: "#111118" }}>Select country…</option>
+              {COUNTRIES.map(c => (
+                <option key={c} value={c} style={{ background: "#111118", color: "#F0EDE6" }}>{c}</option>
+              ))}
+            </select>
           </div>
         </div>
 
