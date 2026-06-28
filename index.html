@@ -200,6 +200,12 @@
     padding: 5px 7px; font-size: 10px; color: var(--muted);
     border: 1px solid var(--border);
   }
+  .pc-status { font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 20px; display: inline-block; }
+  .pc-status.active   { background: rgba(64,192,87,0.12);   color: #40C057; border: 1px solid rgba(64,192,87,0.3); }
+  .pc-status.onhold   { background: rgba(245,159,0,0.12);   color: #F59F00; border: 1px solid rgba(245,159,0,0.3); }
+  .pc-status.inactive { background: rgba(134,142,150,0.12); color: #868E96; border: 1px solid rgba(134,142,150,0.3); }
+  .pc-expiry-warn { font-size: 9px; color: #F59F00; font-weight: 600; }
+  .pc-notes { font-size: 9px; color: rgba(240,237,230,0.4); font-style: italic; border-left: 2px solid rgba(108,99,255,0.3); padding-left: 6px; line-height: 1.4; }
   .pc-footer { display: flex; align-items: center; justify-content: space-between; }
   .pc-stars  { font-size: 11px; color: var(--star); letter-spacing: 1px; }
   .pc-star-empty { color: var(--dim); }
@@ -313,41 +319,48 @@
         <div class="preview-logo-row">
           <div class="preview-dot"></div>
           <span class="preview-name">VendorLair</span>
-          <span class="preview-count">12 vendors</span>
+          <span class="preview-count">57 vendors</span>
         </div>
         <button class="preview-add-btn">+ Add vendor</button>
       </div>
 
       <div class="preview-stats">
         <div class="preview-stat">
-          <div class="preview-stat-val">12</div>
+          <div class="preview-stat-val">57</div>
           <div class="preview-stat-label">Total vendors</div>
         </div>
         <div class="preview-stat">
-          <div class="preview-stat-val">4</div>
+          <div class="preview-stat-val">9</div>
           <div class="preview-stat-label">Categories</div>
         </div>
         <div class="preview-stat">
-          <div class="preview-stat-val" style="color:#6C63FF;">4.3</div>
+          <div class="preview-stat-val" style="color:#6C63FF;">4.1</div>
           <div class="preview-stat-label">Avg rating</div>
         </div>
       </div>
 
       <div class="preview-filters">
-        <span class="preview-filter pf-active">All (12)</span>
+        <span class="preview-filter pf-active">All (57)</span>
         <span class="preview-filter pf-con">🧠 Consulting</span>
         <span class="preview-filter pf-mkt">📣 Marketing</span>
         <span class="preview-filter pf-fin">💰 Finance</span>
       </div>
 
       <div class="preview-grid">
-        <div class="preview-card c-fin">
+        <div class="preview-card c-fin" style="border-color:rgba(245,159,0,0.35);">
           <div class="pc-top">
-            <div class="pc-avatar" style="color:#40C057;">ST</div>
-            <div><div class="pc-name">Stripe</div><div class="pc-url">stripe.com</div></div>
+            <div class="pc-avatar" style="color:#40C057;">NP</div>
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                <div class="pc-name">Norpay Solutions</div>
+                <span class="pc-status active">Active</span>
+              </div>
+              <div class="pc-url">norpay.io</div>
+            </div>
           </div>
           <span class="pc-badge" style="background:rgba(47,158,68,0.15);color:#6EE7B7;">💰 Finance</span>
-          <div class="pc-poc">👤 Sarah Mitchell · Dublin</div>
+          <div class="pc-poc">👤 Anna Bergström · Stockholm</div>
+          <div class="pc-expiry-warn">⚠️ Contract expires in 9 days</div>
           <div class="pc-footer">
             <div class="pc-stars">★★★★★</div>
             <span class="pc-edit">Edit</span>
@@ -356,11 +369,18 @@
 
         <div class="preview-card c-con">
           <div class="pc-top">
-            <div class="pc-avatar" style="color:#4263EB;">AC</div>
-            <div><div class="pc-name">Accenture</div><div class="pc-url">accenture.com</div></div>
+            <div class="pc-avatar" style="color:#4263EB;">VX</div>
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                <div class="pc-name">Vexor Advisory</div>
+                <span class="pc-status active">Active</span>
+              </div>
+              <div class="pc-url">vexor.eu</div>
+            </div>
           </div>
           <span class="pc-badge" style="background:rgba(66,99,235,0.15);color:#7B8FFF;">🧠 Consulting</span>
-          <div class="pc-poc">👤 James Park · Amsterdam</div>
+          <div class="pc-poc">👤 Luca Ferretti · Milan</div>
+          <div class="pc-notes">Excellent on restructuring projects. Renew Q3.</div>
           <div class="pc-footer">
             <div class="pc-stars">★★★★<span class="pc-star-empty">★</span></div>
             <span class="pc-edit">Edit</span>
@@ -369,11 +389,17 @@
 
         <div class="preview-card c-log">
           <div class="pc-top">
-            <div class="pc-avatar" style="color:#339AF0;">DH</div>
-            <div><div class="pc-name">DHL Express</div><div class="pc-url">dhl.com</div></div>
+            <div class="pc-avatar" style="color:#339AF0;">KF</div>
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                <div class="pc-name">Kraftline GmbH</div>
+                <span class="pc-status onhold">On hold</span>
+              </div>
+              <div class="pc-url">kraftline.de</div>
+            </div>
           </div>
           <span class="pc-badge" style="background:rgba(25,113,194,0.15);color:#60B8FF;">🚚 Logistics</span>
-          <div class="pc-poc">👤 Klaus Weber · Berlin</div>
+          <div class="pc-poc">👤 Markus Braun · Hamburg</div>
           <div class="pc-footer">
             <div class="pc-stars">★★★<span class="pc-star-empty">★★</span></div>
             <span class="pc-edit">Edit</span>
@@ -382,11 +408,18 @@
 
         <div class="preview-card c-des">
           <div class="pc-top">
-            <div class="pc-avatar" style="color:#AE3EC9;">FG</div>
-            <div><div class="pc-name">Figma</div><div class="pc-url">figma.com</div></div>
+            <div class="pc-avatar" style="color:#AE3EC9;">PR</div>
+            <div>
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                <div class="pc-name">Prisma Studio</div>
+                <span class="pc-status inactive">Inactive</span>
+              </div>
+              <div class="pc-url">prismastudio.co</div>
+            </div>
           </div>
           <span class="pc-badge" style="background:rgba(134,46,156,0.15);color:#D9A0EF;">🎨 Design</span>
-          <div class="pc-poc">👤 Nina Bakker · Amsterdam</div>
+          <div class="pc-poc">👤 Sofia Andersen · Copenhagen</div>
+          <div class="pc-notes">Replaced by in-house team. Keep for overflow work.</div>
           <div class="pc-footer">
             <div class="pc-stars">★★★★★</div>
             <span class="pc-edit">Edit</span>
