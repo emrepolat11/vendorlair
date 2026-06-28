@@ -57,7 +57,18 @@ const CAT_COLORS = {
   Other:                   { bg:"#F8F9FA", color:"#495057", dot:"#868E96" },
 };
 
-const SUPABASE_URL = "https://zbubciohzssmunwdbdch.supabase.co";
+const STATUS_OPTIONS = [
+  { label: "Active",   color: "#40C057", bg: "rgba(64,192,87,0.12)",  border: "rgba(64,192,87,0.3)"  },
+  { label: "Inactive", color: "#868E96", bg: "rgba(134,142,150,0.12)", border: "rgba(134,142,150,0.3)" },
+  { label: "On hold",  color: "#F59F00", bg: "rgba(245,159,0,0.12)",  border: "rgba(245,159,0,0.3)"  },
+];
+
+// Helper — days until a date (negative = already past)
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const diff = new Date(dateStr) - new Date();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpidWJjaW9oenNzbXVud2RiZGNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NjE0MzMsImV4cCI6MjA5NzUzNzQzM30._mxfvMKXn6GxCQdNawfh33wcE91LoHg8WJ4NSLkCSjc";
 
 async function supabase(method, path, body = null, token = null) {
@@ -219,6 +230,131 @@ function UpgradeBanner({ onUpgrade }) {
 function VendorCard({ vendor, onEdit, onDelete }) {
   const [confirm, setConfirm] = useState(false);
   const accentColor = vendor.category ? CAT_COLORS[vendor.category]?.dot : "rgba(108,99,255,0.5)";
+  const statusOpt = STATUS_OPTIONS.find(s => s.label === (vendor.status || "Active")) || STATUS_OPTIONS[0];
+  const expiryDays = daysUntil(vendor.contract_expiry);
+  const expiryWarning = expiryDays !== null && expiryDays <= 30;
+  const expiryLabel = expiryDays === null ? null
+    : expiryDays < 0 ? `Expired ${Math.abs(expiryDays)}d ago`
+    : expiryDays === 0 ? "Expires today"
+    : `Expires in ${expiryDays}d`;
+
+  return (
+    <div
+      style={{
+        background: "#111118",
+        border: `1px solid ${expiryWarning ? "rgba(245,159,0,0.3)" : "rgba(255,255,255,0.07)"}`,
+        borderRadius: 14, padding: 18,
+        display: "flex", flexDirection: "column", gap: 11,
+        transition: "border-color 0.2s, transform 0.2s",
+        position: "relative", overflow: "hidden",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = expiryWarning ? "rgba(245,159,0,0.5)" : "rgba(108,99,255,0.3)";
+        e.currentTarget.style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = expiryWarning ? "rgba(245,159,0,0.3)" : "rgba(255,255,255,0.07)";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+    >
+      {/* Category accent line */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 2,
+        background: accentColor, borderRadius: "14px 14px 0 0",
+      }} />
+
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
+        <InitialsAvatar name={vendor.name} size={40} category={vendor.category} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <div style={{
+              fontFamily: "'Cormorant Garamond', serif", fontWeight: 700,
+              fontSize: 16, color: "#F0EDE6", lineHeight: 1.2,
+            }}>{vendor.name}</div>
+            <span style={{ background: statusOpt.bg, color: statusOpt.color, border: `1px solid ${statusOpt.border}`, padding: "1px 7px", borderRadius: 20, fontSize: 9, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>
+              {vendor.status || "Active"}
+            </span>
+          </div>
+          {vendor.website && (
+            <a
+              href={vendor.website.startsWith("http") ? vendor.website : `https://${vendor.website}`}
+              target="_blank" rel="noreferrer"
+              style={{ fontSize: 11, color: "rgba(240,237,230,0.3)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {vendor.website.replace(/^https?:\/\//, "")}
+            </a>
+          )}
+          <div style={{ marginTop: 6 }}>
+            {vendor.category && <Badge category={vendor.category} />}
+          </div>
+        </div>
+      </div>
+
+      {(vendor.city || vendor.country) && (
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <span style={{ fontSize: 12 }}>📍</span>
+          <span style={{ fontSize: 11, color: "rgba(240,237,230,0.4)", fontFamily: "'DM Sans', sans-serif" }}>
+            {[vendor.city, vendor.country].filter(Boolean).join(", ")}
+          </span>
+        </div>
+      )}
+
+      {(vendor.poc_name || vendor.poc_email || vendor.poc_phone) && (
+        <div style={{
+          background: "rgba(255,255,255,0.03)", borderRadius: 9,
+          padding: "9px 11px", display: "flex", flexDirection: "column", gap: 3,
+          border: "1px solid rgba(255,255,255,0.05)",
+        }}>
+          <div style={{ fontSize: 9, color: "rgba(240,237,230,0.25)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 2 }}>Contact</div>
+          {vendor.poc_name  && <div style={{ fontSize: 12, color: "rgba(240,237,230,0.8)", fontWeight: 500, fontFamily: "'DM Sans', sans-serif" }}>👤 {vendor.poc_name}</div>}
+          {vendor.poc_email && <div style={{ fontSize: 11, color: "#6C63FF", fontFamily: "'DM Sans', sans-serif" }}>✉️ {vendor.poc_email}</div>}
+          {vendor.poc_phone && <div style={{ fontSize: 11, color: "rgba(240,237,230,0.35)", fontFamily: "'DM Sans', sans-serif" }}>📞 {vendor.poc_phone}</div>}
+        </div>
+      )}
+
+      {(vendor.contract_start || vendor.contract_expiry) && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          {vendor.contract_start && (
+            <div style={{ fontSize: 11, color: "rgba(240,237,230,0.35)", fontFamily: "'DM Sans', sans-serif" }}>
+              📅 Started {new Date(vendor.contract_start).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}
+            </div>
+          )}
+          {vendor.contract_expiry && (
+            <div style={{ fontSize: 11, fontFamily: "'DM Sans', sans-serif", color: expiryWarning ? "#F59F00" : "rgba(240,237,230,0.35)", fontWeight: expiryWarning ? 600 : 400 }}>
+              {expiryWarning ? "⚠️" : "🔄"} {expiryLabel}
+            </div>
+          )}
+        </div>
+      )}
+
+      {vendor.notes && (
+        <div style={{ fontSize: 11, color: "rgba(240,237,230,0.4)", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5, borderLeft: "2px solid rgba(108,99,255,0.3)", paddingLeft: 9, fontStyle: "italic" }}>
+          {vendor.notes.length > 100 ? vendor.notes.slice(0, 100) + "…" : vendor.notes}
+        </div>
+      )}
+
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        marginTop: "auto", paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.05)",
+      }}>
+        <Stars value={vendor.rating || 0} readonly />
+        <div style={{ display: "flex", gap: 6 }}>
+          {confirm ? (
+            <>
+              <button onClick={() => setConfirm(false)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(240,237,230,0.5)", padding: "4px 9px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+              <button onClick={() => onDelete(vendor.id)} style={{ background: "rgba(250,82,82,0.12)", border: "1px solid rgba(250,82,82,0.25)", color: "#FF6B6B", padding: "4px 9px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Confirm</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => onEdit(vendor)} style={{ background: "rgba(108,99,255,0.12)", border: "1px solid rgba(108,99,255,0.25)", color: "#A89FFF", padding: "4px 11px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Edit</button>
+              <button onClick={() => setConfirm(true)} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(240,237,230,0.25)", padding: "4px 9px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>✕</button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div
@@ -318,6 +454,7 @@ function VendorModal({ vendor, onClose, onSave, loading }) {
   const [form, setForm] = useState(vendor || {
     name: "", website: "", country: "", city: "",
     poc_name: "", poc_email: "", poc_phone: "", category: "", rating: 0,
+    status: "Active", notes: "", contract_start: "", contract_expiry: "",
   });
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -408,6 +545,47 @@ function VendorModal({ vendor, onClose, onSave, loading }) {
         <div>
           <label style={lbl}>Your rating</label>
           <Stars value={form.rating || 0} onChange={v => set("rating", v)} />
+        </div>
+
+        <div>
+          <label style={lbl}>Status</label>
+          <div style={{ display: "flex", gap: 7 }}>
+            {STATUS_OPTIONS.map(s => {
+              const sel = (form.status || "Active") === s.label;
+              return (
+                <button key={s.label} onClick={() => set("status", s.label)}
+                  style={{ background: sel ? s.bg : "rgba(255,255,255,0.04)", color: sel ? s.color : "rgba(240,237,230,0.45)", border: sel ? `1px solid ${s.border}` : "1px solid rgba(255,255,255,0.08)", padding: "5px 14px", borderRadius: 20, cursor: "pointer", fontSize: 12, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, transition: "all 0.15s" }}>
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 11, padding: 13, display: "flex", flexDirection: "column", gap: 9, border: "1px solid rgba(255,255,255,0.05)" }}>
+          <label style={{ ...lbl, marginBottom: 0 }}>Contract dates</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div>
+              <label style={{ ...lbl, marginBottom: 4 }}>Start date</label>
+              <input type="date" style={{ ...inp, colorScheme: "dark" }} value={form.contract_start || ""} onChange={e => set("contract_start", e.target.value)} onFocus={focus} onBlur={blur} />
+            </div>
+            <div>
+              <label style={{ ...lbl, marginBottom: 4 }}>Expiry date</label>
+              <input type="date" style={{ ...inp, colorScheme: "dark" }} value={form.contract_expiry || ""} onChange={e => set("contract_expiry", e.target.value)} onFocus={focus} onBlur={blur} />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label style={lbl}>Notes</label>
+          <textarea
+            value={form.notes || ""}
+            onChange={e => set("notes", e.target.value)}
+            onFocus={focus} onBlur={blur}
+            placeholder="Internal notes about this vendor…"
+            rows={3}
+            style={{ ...inp, resize: "vertical", lineHeight: 1.5 }}
+          />
         </div>
 
         <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
@@ -581,15 +759,18 @@ function UpgradeModal({ onClose, trigger }) {
 // ── Dashboard ──────────────────────────────────────────────────────────────
 
 function Dashboard({ token, user, onLogout }) {
-  const [vendors, setVendors]       = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [saving, setSaving]         = useState(false);
-  const [showModal, setShowModal]   = useState(false);
-  const [editing, setEditing]       = useState(null);
-  const [filterCat, setFilterCat]   = useState("All");
-  const [search, setSearch]         = useState("");
-  const [showUpgrade, setShowUpgrade] = useState(null); // "voluntary" | "limit" | null
-  const [isPro, setIsPro]           = useState(false);
+  const [vendors, setVendors]         = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [saving, setSaving]           = useState(false);
+  const [showModal, setShowModal]     = useState(false);
+  const [editing, setEditing]         = useState(null);
+  const [filterCat, setFilterCat]     = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [search, setSearch]           = useState("");
+  const [sortBy, setSortBy]           = useState("newest");
+  const [viewMode, setViewMode]       = useState("grid");
+  const [showUpgrade, setShowUpgrade] = useState(null);
+  const [isPro, setIsPro]             = useState(false);
   const userId = user?.id;
 
   useEffect(() => { fetchVendors(); }, []);
@@ -605,6 +786,11 @@ function Dashboard({ token, user, onLogout }) {
 
   const saveVendor = async (form) => {
     if (!isPro && !editing && vendors.length >= FREE_LIMIT) { setShowUpgrade("limit"); return; }
+    // Duplicate detection
+    const duplicate = vendors.find(v =>
+      v.name.trim().toLowerCase() === form.name.trim().toLowerCase() && v.id !== editing?.id
+    );
+    if (duplicate && !window.confirm(`A vendor named "${duplicate.name}" already exists. Add anyway?`)) return;
     setSaving(true);
     try {
       if (editing) {
@@ -616,6 +802,18 @@ function Dashboard({ token, user, onLogout }) {
       setShowModal(false); setEditing(null);
     } catch (e) { console.error(e); }
     finally { setSaving(false); }
+  };
+
+  const exportCSV = () => {
+    const cols = ["name","website","category","status","city","country","poc_name","poc_email","poc_phone","rating","contract_start","contract_expiry","notes"];
+    const header = cols.join(",");
+    const rows = filtered.map(v =>
+      cols.map(c => `"${(v[c] ?? "").toString().replace(/"/g, '""')}"`).join(",")
+    );
+    const blob = new Blob([header + "\n" + rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "vendorlair-export.csv"; a.click();
+    URL.revokeObjectURL(url);
   };
 
   const deleteVendor = async (id) => {
@@ -630,14 +828,27 @@ function Dashboard({ token, user, onLogout }) {
     setEditing(null); setShowModal(true);
   };
 
-  const filtered = vendors.filter(v => {
-    const mc = filterCat === "All" || v.category === filterCat;
-    const ms = !search ||
-      v.name?.toLowerCase().includes(search.toLowerCase()) ||
-      (v.city || "").toLowerCase().includes(search.toLowerCase()) ||
-      (v.country || "").toLowerCase().includes(search.toLowerCase());
-    return mc && ms;
-  });
+  const filtered = vendors
+    .filter(v => {
+      const mc  = filterCat === "All" || v.category === filterCat;
+      const ms  = filterStatus === "All" || (v.status || "Active") === filterStatus;
+      const q   = search.toLowerCase();
+      const mq  = !search ||
+        v.name?.toLowerCase().includes(q) ||
+        (v.city || "").toLowerCase().includes(q) ||
+        (v.country || "").toLowerCase().includes(q) ||
+        (v.poc_name || "").toLowerCase().includes(q) ||
+        (v.poc_email || "").toLowerCase().includes(q) ||
+        (v.notes || "").toLowerCase().includes(q);
+      return mc && ms && mq;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name-az")   return a.name.localeCompare(b.name);
+      if (sortBy === "name-za")   return b.name.localeCompare(a.name);
+      if (sortBy === "rating")    return (b.rating || 0) - (a.rating || 0);
+      if (sortBy === "expiry")    return (a.contract_expiry || "9999") < (b.contract_expiry || "9999") ? -1 : 1;
+      return 0; // newest — already ordered by created_at.desc from Supabase
+    });
 
   const usedCats = CATEGORIES.filter(c => vendors.some(v => v.category === c.label));
   const atLimit  = !isPro && vendors.length >= FREE_LIMIT;
@@ -671,28 +882,67 @@ function Dashboard({ token, user, onLogout }) {
       </div>
 
       {/* ── Filter bar ── */}
-      <div style={{ background: "#09090C", borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "10px 32px", display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ position: "relative" }}>
-          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "rgba(240,237,230,0.3)" }}>🔍</span>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search vendors…"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, color: "#F0EDE6", padding: "7px 12px 7px 30px", fontSize: 12, outline: "none", fontFamily: "'DM Sans', sans-serif", width: 180 }} />
+      <div style={{ background: "#09090C", borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "10px 32px", display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <div style={{ position: "relative" }}>
+            <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "rgba(240,237,230,0.3)" }}>🔍</span>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search vendors, contacts…"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, color: "#F0EDE6", padding: "7px 12px 7px 30px", fontSize: 12, outline: "none", fontFamily: "'DM Sans', sans-serif", width: 200 }} />
+          </div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <button onClick={() => setFilterCat("All")}
+              style={{ background: filterCat === "All" ? "#6C63FF" : "transparent", border: filterCat === "All" ? "none" : "1px solid rgba(255,255,255,0.07)", color: filterCat === "All" ? "#fff" : "rgba(240,237,230,0.4)", padding: "5px 13px", borderRadius: 20, cursor: "pointer", fontSize: 11, fontFamily: "'DM Sans', sans-serif" }}>
+              All ({vendors.length})
+            </button>
+            {usedCats.map(c => {
+              const count  = vendors.filter(v => v.category === c.label).length;
+              const col    = CAT_COLORS[c.label];
+              const active = filterCat === c.label;
+              return (
+                <button key={c.label} onClick={() => setFilterCat(active ? "All" : c.label)}
+                  style={{ background: active ? col.bg : "transparent", border: active ? `1px solid ${col.dot}` : "1px solid rgba(255,255,255,0.07)", color: active ? col.color : "rgba(240,237,230,0.4)", padding: "5px 13px", borderRadius: 20, cursor: "pointer", fontSize: 11, fontFamily: "'DM Sans', sans-serif", display: "flex", alignItems: "center", gap: 4 }}>
+                  <span>{c.emoji}</span>{c.label} ({count})
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          <button onClick={() => setFilterCat("All")}
-            style={{ background: filterCat === "All" ? "#6C63FF" : "transparent", border: filterCat === "All" ? "none" : "1px solid rgba(255,255,255,0.07)", color: filterCat === "All" ? "#fff" : "rgba(240,237,230,0.4)", padding: "5px 13px", borderRadius: 20, cursor: "pointer", fontSize: 11, fontFamily: "'DM Sans', sans-serif" }}>
-            All ({vendors.length})
+
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {/* Status filter */}
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, color: "rgba(240,237,230,0.6)", padding: "6px 10px", fontSize: 11, outline: "none", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
+            <option value="All">All statuses</option>
+            {STATUS_OPTIONS.map(s => <option key={s.label} value={s.label}>{s.label}</option>)}
+          </select>
+
+          {/* Sort */}
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, color: "rgba(240,237,230,0.6)", padding: "6px 10px", fontSize: 11, outline: "none", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
+            <option value="newest">Newest first</option>
+            <option value="name-az">Name A–Z</option>
+            <option value="name-za">Name Z–A</option>
+            <option value="rating">Highest rated</option>
+            <option value="expiry">Expiry soonest</option>
+          </select>
+
+          {/* Export CSV */}
+          <button onClick={exportCSV} title="Export to CSV"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(240,237,230,0.5)", padding: "6px 11px", borderRadius: 7, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+            ⬇ Export
           </button>
-          {usedCats.map(c => {
-            const count  = vendors.filter(v => v.category === c.label).length;
-            const col    = CAT_COLORS[c.label];
-            const active = filterCat === c.label;
-            return (
-              <button key={c.label} onClick={() => setFilterCat(active ? "All" : c.label)}
-                style={{ background: active ? col.bg : "transparent", border: active ? `1px solid ${col.dot}` : "1px solid rgba(255,255,255,0.07)", color: active ? col.color : "rgba(240,237,230,0.4)", padding: "5px 13px", borderRadius: 20, cursor: "pointer", fontSize: 11, fontFamily: "'DM Sans', sans-serif", display: "flex", alignItems: "center", gap: 4 }}>
-                <span>{c.emoji}</span>{c.label} ({count})
-              </button>
-            );
-          })}
+
+          {/* View toggle */}
+          <div style={{ display: "flex", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, overflow: "hidden" }}>
+            <button onClick={() => setViewMode("grid")} title="Grid view"
+              style={{ background: viewMode === "grid" ? "rgba(108,99,255,0.2)" : "transparent", border: "none", color: viewMode === "grid" ? "#A89FFF" : "rgba(240,237,230,0.3)", padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center" }}>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0.5" y="0.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="7.5" y="0.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="0.5" y="7.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="7.5" y="7.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
+            </button>
+            <button onClick={() => setViewMode("list")} title="List view"
+              style={{ background: viewMode === "list" ? "rgba(108,99,255,0.2)" : "transparent", border: "none", color: viewMode === "list" ? "#A89FFF" : "rgba(240,237,230,0.3)", padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center" }}>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0.5" y="1.5" width="12" height="1.5" rx="0.75" stroke="currentColor" strokeWidth="1.2"/><rect x="0.5" y="5.75" width="12" height="1.5" rx="0.75" stroke="currentColor" strokeWidth="1.2"/><rect x="0.5" y="10" width="12" height="1.5" rx="0.75" stroke="currentColor" strokeWidth="1.2"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -736,14 +986,46 @@ function Dashboard({ token, user, onLogout }) {
             <div style={{ fontSize: 11, color: "rgba(240,237,230,0.25)", marginBottom: 14, letterSpacing: "0.05em", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif" }}>
               {filtered.length} vendor{filtered.length !== 1 ? "s" : ""}
               {filterCat !== "All" ? ` · ${filterCat}` : ""}
+              {filterStatus !== "All" ? ` · ${filterStatus}` : ""}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: 14 }}>
-              {filtered.map(v => (
-                <VendorCard key={v.id} vendor={v}
-                  onEdit={v => { setEditing(v); setShowModal(true); }}
-                  onDelete={deleteVendor} />
-              ))}
-            </div>
+
+            {viewMode === "grid" ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: 14 }}>
+                {filtered.map(v => (
+                  <VendorCard key={v.id} vendor={v}
+                    onEdit={v => { setEditing(v); setShowModal(true); }}
+                    onDelete={deleteVendor} />
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, overflow: "hidden" }}>
+                {filtered.map((v, i) => {
+                  const statusOpt = STATUS_OPTIONS.find(s => s.label === (v.status || "Active")) || STATUS_OPTIONS[0];
+                  const expiryDays = daysUntil(v.contract_expiry);
+                  const expiryWarning = expiryDays !== null && expiryDays <= 30;
+                  const accentColor = v.category ? CAT_COLORS[v.category]?.dot : "rgba(108,99,255,0.5)";
+                  return (
+                    <div key={v.id} style={{ background: "#111118", borderBottom: i < filtered.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none", padding: "11px 16px", display: "flex", alignItems: "center", gap: 12, position: "relative", transition: "background 0.15s" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#16161F"}
+                      onMouseLeave={e => e.currentTarget.style.background = "#111118"}>
+                      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: accentColor }} />
+                      <InitialsAvatar name={v.name} size={30} category={v.category} />
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 14, color: "#F0EDE6", minWidth: 120 }}>{v.name}</div>
+                      {v.website && <div style={{ fontSize: 10, color: "rgba(240,237,230,0.3)", fontFamily: "'DM Sans', sans-serif", minWidth: 100 }}>{v.website.replace(/^https?:\/\//, "")}</div>}
+                      {v.category && <Badge category={v.category} />}
+                      <span style={{ background: statusOpt.bg, color: statusOpt.color, border: `1px solid ${statusOpt.border}`, padding: "1px 7px", borderRadius: 20, fontSize: 9, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{v.status || "Active"}</span>
+                      {(v.city || v.country) && <div style={{ fontSize: 10, color: "rgba(240,237,230,0.35)", fontFamily: "'DM Sans', sans-serif", minWidth: 100 }}>📍 {[v.city, v.country].filter(Boolean).join(", ")}</div>}
+                      {v.contract_expiry && <div style={{ fontSize: 10, color: expiryWarning ? "#F59F00" : "rgba(240,237,230,0.3)", fontFamily: "'DM Sans', sans-serif", fontWeight: expiryWarning ? 600 : 400 }}>{expiryWarning ? "⚠️ " : "🔄 "}{new Date(v.contract_expiry).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}</div>}
+                      <Stars value={v.rating || 0} readonly />
+                      <div style={{ marginLeft: "auto", display: "flex", gap: 5 }}>
+                        <button onClick={() => { setEditing(v); setShowModal(true); }} style={{ background: "rgba(108,99,255,0.12)", border: "1px solid rgba(108,99,255,0.25)", color: "#A89FFF", padding: "3px 10px", borderRadius: 5, fontSize: 10, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Edit</button>
+                        <button onClick={() => deleteVendor(v.id)} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(240,237,230,0.25)", padding: "3px 8px", borderRadius: 5, fontSize: 10, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>✕</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </div>
