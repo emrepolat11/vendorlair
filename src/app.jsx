@@ -407,16 +407,26 @@ function AuthScreen({ onAuth }) {
   const focus = e => { e.target.style.borderColor = "rgba(108,99,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(108,99,255,0.1)"; };
   const blur  = e => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; };
 
+  const switchMode = (next) => { setMode(next); setError(""); setSuccess(""); };
+
   const submit = async () => {
     setError(""); setLoading(true);
     try {
       if (mode === "login") {
         const data = await authRequest("token?grant_type=password", { email, password });
         onAuth(data.access_token, data.user);
-      } else {
+      } else if (mode === "signup") {
         await authRequest("signup", { email, password, data: { company_name: company } });
         setSuccess("Check your email to confirm your account, then log in.");
         setMode("login");
+      } else if (mode === "reset") {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
+          body: JSON.stringify({ email }),
+        });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.msg || "Request failed"); }
+        setSuccess("If that email is registered, a reset link is on its way.");
       }
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
@@ -436,10 +446,10 @@ function AuthScreen({ onAuth }) {
       <div style={{ width: "100%", maxWidth: 400, marginTop: 64 }}>
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 28, color: "#F0EDE6", letterSpacing: "-0.02em", marginTop: 16 }}>
-            {mode === "login" ? "Welcome back" : "Create account"}
+            {mode === "login" ? "Welcome back" : mode === "signup" ? "Create account" : "Reset password"}
           </div>
           <div style={{ fontSize: 14, color: "rgba(240,237,230,0.45)", marginTop: 6, fontWeight: 300 }}>
-            {mode === "login" ? "Log in to your lair" : "Start tracking your vendors"}
+            {mode === "login" ? "Log in to your lair" : mode === "signup" ? "Start tracking your vendors" : "We'll send you a reset link"}
           </div>
         </div>
 
@@ -466,19 +476,28 @@ function AuthScreen({ onAuth }) {
               <label style={lbl}>Email</label>
               <input style={inp} type="email" value={email} onChange={e => setEmail(e.target.value)} onFocus={focus} onBlur={blur} placeholder="you@company.com" onKeyDown={e => e.key === "Enter" && submit()} />
             </div>
-            <div>
-              <label style={lbl}>Password</label>
-              <input style={inp} type="password" value={password} onChange={e => setPassword(e.target.value)} onFocus={focus} onBlur={blur} placeholder="Min 8 characters" onKeyDown={e => e.key === "Enter" && submit()} />
-            </div>
+            {mode !== "reset" && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <label style={{ ...lbl, marginBottom: 0 }}>Password</label>
+                  {mode === "login" && (
+                    <span onClick={() => switchMode("reset")} style={{ fontSize: 11, color: "#6C63FF", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+                      Forgot password?
+                    </span>
+                  )}
+                </div>
+                <input style={inp} type="password" value={password} onChange={e => setPassword(e.target.value)} onFocus={focus} onBlur={blur} placeholder="Min 8 characters" onKeyDown={e => e.key === "Enter" && submit()} />
+              </div>
+            )}
             <button onClick={submit} disabled={loading} style={{ background: "#6C63FF", border: "none", color: "#fff", padding: 14, borderRadius: 9, fontSize: 14, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: "pointer", marginTop: 2, boxShadow: "0 4px 14px rgba(108,99,255,0.35)", opacity: loading ? 0.7 : 1 }}>
-              {loading ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
+              {loading ? "Please wait…" : mode === "login" ? "Log in" : mode === "signup" ? "Create account" : "Send reset link"}
             </button>
           </div>
 
           <div style={{ textAlign: "center", marginTop: 18, fontSize: 13, color: "rgba(240,237,230,0.35)" }}>
-            {mode === "login" ? "No account yet? " : "Already have an account? "}
-            <span onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); setSuccess(""); }} style={{ color: "#6C63FF", cursor: "pointer", fontWeight: 500 }}>
-              {mode === "login" ? "Sign up free" : "Log in"}
+            {mode === "reset" ? "Remembered it? " : mode === "login" ? "No account yet? " : "Already have an account? "}
+            <span onClick={() => switchMode(mode === "signup" ? "login" : "login")} style={{ color: "#6C63FF", cursor: "pointer", fontWeight: 500 }}>
+              {mode === "reset" ? "Back to log in" : mode === "login" ? "Sign up free" : "Log in"}
             </span>
           </div>
           {mode === "login" && (
