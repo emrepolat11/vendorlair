@@ -720,6 +720,100 @@ function Dashboard({ token, user, onLogout }) {
   );
 }
 
+// ── Set New Password Screen ────────────────────────────────────────────────
+
+function SetNewPasswordScreen({ accessToken, onDone }) {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm]   = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const [success, setSuccess]   = useState(false);
+
+  const inp = {
+    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 9, color: "#F0EDE6", padding: "13px 16px", fontSize: 14, width: "100%",
+    outline: "none", fontFamily: "'DM Sans', sans-serif",
+    boxSizing: "border-box", transition: "border-color 0.15s",
+  };
+  const lbl = { fontSize: 10, color: "rgba(240,237,230,0.4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6, display: "block" };
+  const focus = e => { e.target.style.borderColor = "rgba(108,99,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(108,99,255,0.1)"; };
+  const blur  = e => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; };
+
+  const submit = async () => {
+    setError("");
+    if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (password !== confirm) { setError("Passwords don't match."); return; }
+    setLoading(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.message || "Update failed"); }
+      setSuccess(true);
+      setTimeout(onDone, 2500);
+    } catch (e) { setError(e.message); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#09090C", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'DM Sans', sans-serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, padding: "0 48px", height: 64, display: "flex", alignItems: "center", background: "rgba(9,9,12,0.80)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.07)", zIndex: 100 }}>
+        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 700, color: "#F0EDE6", letterSpacing: "0.5px" }}>VendorLair</span>
+      </div>
+
+      <div style={{ width: "100%", maxWidth: 400, marginTop: 64 }}>
+        <div style={{ textAlign: "center", marginBottom: 30 }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 28, color: "#F0EDE6", letterSpacing: "-0.02em", marginTop: 16 }}>
+            Set new password
+          </div>
+          <div style={{ fontSize: 14, color: "rgba(240,237,230,0.45)", marginTop: 6, fontWeight: 300 }}>
+            Choose a strong password for your account
+          </div>
+        </div>
+
+        <div style={{ background: "#111118", borderRadius: 18, padding: 26, border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 40px 80px rgba(0,0,0,0.4)" }}>
+          {success ? (
+            <div style={{ textAlign: "center", padding: "12px 0" }}>
+              <div style={{ fontSize: 36, marginBottom: 14 }}>✅</div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 700, color: "#F0EDE6", marginBottom: 8 }}>Password updated</div>
+              <div style={{ fontSize: 13, color: "rgba(240,237,230,0.4)" }}>Redirecting you to log in…</div>
+            </div>
+          ) : (
+            <>
+              {error && (
+                <div style={{ background: "rgba(250,82,82,0.10)", border: "1px solid rgba(250,82,82,0.22)", borderRadius: 9, padding: "11px 14px", color: "#FF6B6B", fontSize: 13, marginBottom: 18 }}>
+                  ⚠️ {error}
+                </div>
+              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
+                <div>
+                  <label style={lbl}>New password</label>
+                  <input style={inp} type="password" value={password} onChange={e => setPassword(e.target.value)} onFocus={focus} onBlur={blur} placeholder="Min 8 characters" onKeyDown={e => e.key === "Enter" && submit()} />
+                </div>
+                <div>
+                  <label style={lbl}>Confirm password</label>
+                  <input style={inp} type="password" value={confirm} onChange={e => setConfirm(e.target.value)} onFocus={focus} onBlur={blur} placeholder="Repeat your password" onKeyDown={e => e.key === "Enter" && submit()} />
+                </div>
+                <button onClick={submit} disabled={loading} style={{ background: "#6C63FF", border: "none", color: "#fff", padding: 14, borderRadius: 9, fontSize: 14, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: "pointer", marginTop: 2, boxShadow: "0 4px 14px rgba(108,99,255,0.35)", opacity: loading ? 0.7 : 1 }}>
+                  {loading ? "Saving…" : "Update password"}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Root ───────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -729,6 +823,17 @@ export default function App() {
       return s ? JSON.parse(s) : null;
     } catch { return null; }
   });
+
+  // Detect Supabase recovery token in URL hash
+  const [recoveryToken, setRecoveryToken] = useState(() => {
+    const hash = window.location.hash;
+    const params = new URLSearchParams(hash.replace("#", ""));
+    if (params.get("type") === "recovery") {
+      return params.get("access_token");
+    }
+    return null;
+  });
+
   const handleAuth = (token, user) => {
     const s = { token, user };
     localStorage.setItem("vl_session", JSON.stringify(s));
@@ -738,6 +843,13 @@ export default function App() {
     localStorage.removeItem("vl_session");
     setSession(null);
   };
+  const handlePasswordUpdated = () => {
+    // Clear the hash and go to login
+    window.history.replaceState(null, "", window.location.pathname);
+    setRecoveryToken(null);
+  };
+
+  if (recoveryToken) return <SetNewPasswordScreen accessToken={recoveryToken} onDone={handlePasswordUpdated} />;
   if (!session) return <AuthScreen onAuth={handleAuth} />;
   return <Dashboard token={session.token} user={session.user} onLogout={handleLogout} />;
 }
