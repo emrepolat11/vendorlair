@@ -308,7 +308,7 @@
     <p class="hero-sub">Stop losing track of who you work with. VendorLair gives your team one clean place to log, rate, and remember every vendor — forever.</p>
     <div class="hero-cta">
       <a href="/app" class="btn-hero-primary">Start free — no card needed</a>
-      <button class="btn-hero-ghost">See how it works</button>
+      <button class="btn-hero-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See how it works</button>
     </div>
     <p class="hero-note">Free up to 10 vendors · $3/month for unlimited</p>
   </div>
@@ -442,7 +442,7 @@
 </div>
 
 <!-- ── FEATURES ── -->
-<section class="features">
+<section class="features" id="features">
   <div class="section-label">Why VendorLair</div>
   <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
   <div class="features-grid">
@@ -462,9 +462,9 @@
       <div class="feature-desc">Store the right person's name, email, and phone. No more digging through inboxes when you need someone.</div>
     </div>
     <div class="feature">
-      <div class="feature-icon">📊</div>
-      <div class="feature-title">Dashboard overview</div>
-      <div class="feature-desc">See your vendor count, top-rated suppliers, and category breakdown at a glance — every time you log in.</div>
+      <div class="feature-icon">📅</div>
+      <div class="feature-title">Contract lifecycle tracking</div>
+      <div class="feature-desc">Log contract start and expiry dates for every vendor. Get a visual warning when a renewal is approaching so nothing slips through the cracks.</div>
     </div>
     <div class="feature">
       <div class="feature-icon">🌍</div>
@@ -495,7 +495,7 @@
   <div class="footer-links">
     <a href="#">Privacy</a>
     <a href="#">Terms</a>
-    <a href="#">Contact</a>
+    <a href="mailto:hello@vendorlair.com">Contact</a>
   </div>
   <span>© 2026 VendorLair</span>
 </footer>
