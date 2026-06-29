@@ -653,7 +653,7 @@ function UpgradeModal({ onClose, trigger }) {
           $3<span style={{ fontSize: 18, color: "rgba(240,237,230,0.4)", fontWeight: 400 }}>/month</span>
         </div>
         <div style={{ fontSize: 12, color: "rgba(240,237,230,0.3)", marginBottom: 26 }}>Cancel anytime</div>
-        <button onClick={() => window.open("https://buy.stripe.com/YOUR_STRIPE_LINK", "_blank")}
+        <button onClick={() => window.open("https://buy.stripe.com/7sY28rbXz0w65B0cPBc3m00", "_blank")}
           style={{ background: "#6C63FF", border: "none", color: "#fff", padding: "13px 32px", borderRadius: 9, fontSize: 14, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: "pointer", width: "100%", boxShadow: "0 4px 14px rgba(108,99,255,0.35)", marginBottom: 11 }}>
           Upgrade now — $3/month
         </button>
@@ -682,7 +682,30 @@ function Dashboard({ token, user, onLogout }) {
   const [isPro, setIsPro]             = useState(false);
   const userId = user?.id;
 
-  useEffect(() => { fetchVendors(); }, []);
+  useEffect(() => {
+    fetchVendors();
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      // Check if user just came back from Stripe
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("upgraded") === "true") {
+        // Mark as Pro in Supabase
+        await supabase("PATCH", `/rest/v1/profiles?id=eq.${userId}`,
+          { is_pro: true }, token);
+        // Clean the URL
+        window.history.replaceState(null, "", window.location.pathname);
+        setIsPro(true);
+        return;
+      }
+      // Otherwise fetch existing profile
+      const data = await supabase("GET",
+        `/rest/v1/profiles?id=eq.${userId}&select=is_pro`, null, token);
+      if (data && data[0]) setIsPro(!!data[0].is_pro);
+    } catch (e) { console.error(e); }
+  };
 
   const fetchVendors = async () => {
     setLoading(true);
@@ -779,8 +802,8 @@ function Dashboard({ token, user, onLogout }) {
           <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 18, color: "#F0EDE6", letterSpacing: "0.5px" }}>VendorLair</div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: "rgba(240,237,230,0.3)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 20, padding: "3px 10px" }}>
-            {vendors.length} vendor{vendors.length !== 1 ? "s" : ""} · {isPro ? "Pro" : "Free"}
+          <span style={{ fontSize: 11, color: isPro ? "#A89FFF" : "rgba(240,237,230,0.3)", background: isPro ? "rgba(108,99,255,0.15)" : "rgba(255,255,255,0.04)", border: isPro ? "1px solid rgba(108,99,255,0.3)" : "1px solid rgba(255,255,255,0.07)", borderRadius: 20, padding: "3px 10px" }}>
+            {vendors.length} vendor{vendors.length !== 1 ? "s" : ""} · {isPro ? "⚡ Pro" : "Free"}
           </span>
           {!isPro && (
             <button onClick={() => setShowUpgrade("voluntary")} style={{ background: "transparent", border: "1px solid rgba(108,99,255,0.35)", color: "#A89FFF", padding: "6px 13px", borderRadius: 7, fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>⚡ Upgrade</button>
