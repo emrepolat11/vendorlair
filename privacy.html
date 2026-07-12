@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — VendorLair</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #09090C; --surface: #111118; --border: rgba(255,255,255,0.07);
+    --purple: #6C63FF; --white: #F0EDE6; --muted: rgba(240,237,230,0.55); --dim: rgba(240,237,230,0.25);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 400; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px; height: 64px; display: flex; align-items: center; justify-content: space-between; background: rgba(9,9,12,0.90); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: var(--white); text-decoration: none; letter-spacing: 0.5px; }
+  .nav-back { font-size: 13px; color: var(--dim); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 120px 48px 80px; }
+
+  .page-label { font-size: 11px; color: var(--purple); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; margin-bottom: 12px; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 700; color: var(--white); line-height: 1.1; margin-bottom: 8px; }
+  .page-date { font-size: 13px; color: var(--dim); margin-bottom: 56px; }
+
+  .section { margin-bottom: 48px; }
+  h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--white); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 14px; font-weight: 300; }
+  ul { padding-left: 20px; margin-bottom: 14px; }
+  ul li { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 6px; font-weight: 300; }
+  a { color: var(--purple); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .highlight { background: rgba(108,99,255,0.08); border: 1px solid rgba(108,99,255,0.2); border-radius: 10px; padding: 16px 20px; margin-bottom: 14px; }
+  .highlight p { margin-bottom: 0; color: rgba(240,237,230,0.7); }
+
+  footer { border-top: 1px solid var(--border); padding: 32px 48px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--dim); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--dim); text-decoration: none; }
+  .footer-links a:hover { color: var(--muted); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .container { padding: 100px 20px 60px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; padding: 24px 20px; }
+    .footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">VendorLair</a>
+  <a href="/" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="container">
+  <div class="page-label">Legal</div>
+  <h1 class="page-title">Privacy Policy</h1>
+  <p class="page-date">Last updated: June 2026</p>
+
+  <div class="section">
+    <h2>1. Who we are</h2>
+    <p>VendorLair is operated by Emre Polat, an individual based in Berlin, Germany (Claudiusstr 11, 10557 Berlin). For the purposes of the General Data Protection Regulation (GDPR), Emre Polat is the data controller for personal data collected through this service.</p>
+    <p>If you have any questions about this policy or how your data is handled, please contact us at <a href="mailto:hello@vendorlair.com">hello@vendorlair.com</a>.</p>
+  </div>
+
+  <div class="section">
+    <h2>2. What data we collect</h2>
+    <p>We collect the minimum data necessary to provide the VendorLair service:</p>
+    <ul>
+      <li><strong>Account data:</strong> your email address and password (stored securely via Supabase Auth)</li>
+      <li><strong>Company name:</strong> optionally provided during signup</li>
+      <li><strong>Vendor data:</strong> the vendor records you create, including company names, websites, categories, contact details, ratings, notes, and contract dates</li>
+      <li><strong>Payment data:</strong> handled entirely by Stripe. We never see or store your card details.</li>
+      <li><strong>Technical data:</strong> IP address and browser information collected automatically when you use the service</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. How we use your data</h2>
+    <p>Your personal data (email address, account information) is used solely to:</p>
+    <ul>
+      <li>Create and manage your VendorLair account</li>
+      <li>Send transactional emails such as password resets and account confirmations</li>
+      <li>Process your subscription payment via Stripe</li>
+      <li>Respond to support requests you send us</li>
+    </ul>
+    <p>We will never sell, rent, or share your personal data with third parties for marketing purposes.</p>
+
+    <div class="highlight">
+      <p><strong>Regarding vendor data:</strong> The vendor records you create (company names, categories, ratings, and similar information) may be used by VendorLair in anonymized and aggregated form — for example, to understand which vendor categories are most common, or to provide industry benchmarking insights. This aggregated data is never linked to your account or personal identity. We do not access, read, or use the contact details or notes you store for your individual vendors.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Third-party services</h2>
+    <p>VendorLair uses the following third-party services to operate:</p>
+    <ul>
+      <li><strong>Supabase</strong> (supabase.com) — database and authentication. Data is stored in EU (Ireland) servers.</li>
+      <li><strong>Stripe</strong> (stripe.com) — payment processing. Stripe is PCI-DSS compliant and handles all payment data.</li>
+      <li><strong>Vercel</strong> (vercel.com) — website hosting and deployment.</li>
+      <li><strong>Resend</strong> (resend.com) — transactional email delivery (password resets, confirmations).</li>
+      <li><strong>Google Fonts</strong> — font delivery. Loading fonts from Google's servers may transmit your IP address to Google.</li>
+    </ul>
+    <p>Each of these providers has their own privacy policy and data processing agreements in place.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Legal basis for processing (GDPR)</h2>
+    <p>We process your personal data on the following legal bases:</p>
+    <ul>
+      <li><strong>Contract performance:</strong> processing your account data and vendor data is necessary to provide the service you signed up for</li>
+      <li><strong>Legitimate interest:</strong> using anonymized, aggregated vendor data to improve the service and provide market insights</li>
+      <li><strong>Legal obligation:</strong> retaining payment records as required by German tax law</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>6. Data retention</h2>
+    <p>We retain your personal data for as long as your account is active. If you delete your account, your personal data and vendor records will be deleted within 30 days. Payment records may be retained for up to 10 years as required by German commercial law (HGB).</p>
+  </div>
+
+  <div class="section">
+    <h2>7. Your rights under GDPR</h2>
+    <p>As a user based in the EU, you have the following rights regarding your personal data:</p>
+    <ul>
+      <li><strong>Right of access:</strong> request a copy of the data we hold about you</li>
+      <li><strong>Right to rectification:</strong> correct any inaccurate data</li>
+      <li><strong>Right to erasure:</strong> request deletion of your data</li>
+      <li><strong>Right to portability:</strong> receive your data in a machine-readable format (use the CSV export feature in your dashboard)</li>
+      <li><strong>Right to object:</strong> object to processing based on legitimate interest</li>
+      <li><strong>Right to lodge a complaint:</strong> with the Berlin Commissioner for Data Protection and Freedom of Information (Berliner Beauftragte für Datenschutz und Informationsfreiheit)</li>
+    </ul>
+    <p>To exercise any of these rights, contact us at <a href="mailto:hello@vendorlair.com">hello@vendorlair.com</a>.</p>
+  </div>
+
+  <div class="section">
+    <h2>8. Cookies</h2>
+    <p>VendorLair does not use tracking or advertising cookies. We use a single session token stored in your browser's local storage to keep you logged in. Google Fonts may set cookies when loading typefaces — we are working to replace this with self-hosted fonts to eliminate this entirely.</p>
+  </div>
+
+  <div class="section">
+    <h2>9. Changes to this policy</h2>
+    <p>We may update this privacy policy from time to time. When we do, we will update the date at the top of this page. Continued use of VendorLair after changes constitutes acceptance of the updated policy.</p>
+  </div>
+
+  <div class="section">
+    <h2>10. Contact</h2>
+    <p>For any privacy-related questions or to exercise your rights, contact us at <a href="mailto:hello@vendorlair.com">hello@vendorlair.com</a>.</p>
+  </div>
+</div>
+
+<footer>
+  <a href="/" style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;color:rgba(240,237,230,0.5);text-decoration:none;">VendorLair</a>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="mailto:hello@vendorlair.com">Contact</a>
+  </div>
+  <span>© 2026 VendorLair</span>
+</footer>
+
+</body>
+</html>
