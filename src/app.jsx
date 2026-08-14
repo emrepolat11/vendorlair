@@ -622,7 +622,7 @@ function AuthScreen({ onAuth }) {
 
           <div style={{ textAlign: "center", marginTop: 18, fontSize: 13, color: "rgba(240,237,230,0.35)" }}>
             {mode === "reset" ? "Remembered it? " : mode === "login" ? "No account yet? " : "Already have an account? "}
-            <span onClick={() => switchMode(mode === "signup" ? "login" : "login")} style={{ color: "#6C63FF", cursor: "pointer", fontWeight: 500 }}>
+            <span onClick={() => switchMode(mode === "signup" ? "login" : "signup")} style={{ color: "#6C63FF", cursor: "pointer", fontWeight: 500 }}>
               {mode === "reset" ? "Back to log in" : mode === "login" ? "Sign up free" : "Log in"}
             </span>
           </div>
