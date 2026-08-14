@@ -512,7 +512,10 @@ function VendorModal({ vendor, onClose, onSave, loading }) {
 // ── Auth Screen ────────────────────────────────────────────────────────────
 
 function AuthScreen({ onAuth }) {
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState(() => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("mode") === "signup" ? "signup" : "login";
+});
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [company, setCompany] = useState("");
