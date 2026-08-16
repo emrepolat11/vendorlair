@@ -10,6 +10,17 @@
 
   gtag('config', 'G-4LZX901XGC');
 </script>
+<script>
+  try {
+    document.documentElement.dataset.theme = localStorage.getItem('vendorlair-theme') === 'light' ? 'light' : 'dark';
+  } catch (e) {
+    document.documentElement.dataset.theme = 'dark';
+  }
+</script>
+<style>
+  html[data-theme="light"], html[data-theme="light"] body { background:#F7F7FB; }
+  html[data-theme="dark"], html[data-theme="dark"] body { background:#09090C; }
+</style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VendorLair — Dashboard</title>
