@@ -18,10 +18,7 @@ const MOBILE_CSS = `
     box-sizing: border-box !important;
   }
 
-  .vl-mobile-brand-row {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
+  .vl-mobile-brand-row { width: 100% !important; min-width: 0 !important; }
 
   .vl-mobile-actions {
     width: 100% !important;
@@ -121,10 +118,7 @@ const MOBILE_CSS = `
     min-width: 0 !important;
   }
 
-  .vl-mobile-vendor-grid > * {
-    min-width: 0 !important;
-    max-width: 100% !important;
-  }
+  .vl-mobile-vendor-grid > * { min-width: 0 !important; max-width: 100% !important; }
 
   .vl-mobile-list {
     width: 100% !important;
@@ -136,9 +130,9 @@ const MOBILE_CSS = `
   .vl-mobile-list-row {
     display: grid !important;
     grid-template-columns: 40px minmax(0, 1fr) auto !important;
-    grid-template-rows: auto auto !important;
+    grid-template-rows: auto auto auto !important;
     column-gap: 10px !important;
-    row-gap: 6px !important;
+    row-gap: 5px !important;
     align-items: center !important;
     width: 100% !important;
     min-width: 0 !important;
@@ -146,18 +140,12 @@ const MOBILE_CSS = `
     box-sizing: border-box !important;
   }
 
-  .vl-mobile-list-row > * {
-    min-width: 0 !important;
-    max-width: 100% !important;
-  }
-
-  .vl-mobile-list-accent {
-    position: absolute !important;
-  }
+  .vl-mobile-list-row > * { min-width: 0 !important; max-width: 100% !important; }
+  .vl-mobile-list-accent { position: absolute !important; }
 
   .vl-mobile-list-avatar {
     grid-column: 1 !important;
-    grid-row: 1 / span 2 !important;
+    grid-row: 1 / span 3 !important;
   }
 
   .vl-mobile-list-name {
@@ -197,9 +185,30 @@ const MOBILE_CSS = `
     white-space: nowrap !important;
   }
 
-  .vl-mobile-list-secondary {
-    display: none !important;
+  .vl-mobile-list-expiry,
+  .vl-mobile-list-rating {
+    display: block !important;
+    grid-row: 3 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 10px !important;
+    line-height: 1.3 !important;
+    color: rgba(240,237,230,0.38) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
+
+  .vl-mobile-list-expiry {
+    grid-column: 2 !important;
+    justify-self: start !important;
+  }
+
+  .vl-mobile-list-rating {
+    grid-column: 3 !important;
+    justify-self: end !important;
+  }
+
+  .vl-mobile-list-secondary { display: none !important; }
 
   .vl-mobile-action-centre {
     right: 14px !important;
@@ -221,22 +230,11 @@ const MOBILE_CSS = `
 }
 
 @media (max-width: 420px) {
-  .vl-mobile-actions {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  .vl-mobile-actions > span:first-child {
-    grid-column: 1 / -1 !important;
-  }
-
+  .vl-mobile-actions { grid-template-columns: 1fr 1fr !important; }
+  .vl-mobile-actions > span:first-child { grid-column: 1 / -1 !important; }
   .vl-mobile-topbar button,
-  .vl-mobile-topbar span {
-    font-size: 11px !important;
-  }
-
-  .vl-mobile-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
+  .vl-mobile-topbar span { font-size: 11px !important; }
+  .vl-mobile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 `
 
@@ -247,6 +245,10 @@ const CATEGORY_LABELS = [
 ]
 
 const STATUS_LABELS = ['Active', 'Inactive', 'On hold']
+
+function isStars(el) {
+  return Array.from(el.querySelectorAll('span')).filter(s => (s.textContent || '').trim() === '★').length === 5
+}
 
 function markListRows(root, allDivs) {
   const listContainer = allDivs.find(el =>
@@ -270,11 +272,14 @@ function markListRows(root, allDivs) {
     let statusTagged = false
     let categoryTagged = false
     let editTagged = false
+    let expiryTagged = false
+    let ratingTagged = false
 
     children.forEach(child => {
       child.classList.remove(
         'vl-mobile-list-accent','vl-mobile-list-avatar','vl-mobile-list-name',
-        'vl-mobile-list-status','vl-mobile-list-category','vl-mobile-list-edit','vl-mobile-list-secondary'
+        'vl-mobile-list-status','vl-mobile-list-category','vl-mobile-list-edit',
+        'vl-mobile-list-expiry','vl-mobile-list-rating','vl-mobile-list-secondary'
       )
 
       const text = (child.textContent || '').trim()
@@ -313,6 +318,18 @@ function markListRows(root, allDivs) {
         return
       }
 
+      if (!expiryTagged && (text.startsWith('🔄') || text.startsWith('⚠️'))) {
+        child.classList.add('vl-mobile-list-expiry')
+        expiryTagged = true
+        return
+      }
+
+      if (!ratingTagged && isStars(child)) {
+        child.classList.add('vl-mobile-list-rating')
+        ratingTagged = true
+        return
+      }
+
       child.classList.add('vl-mobile-list-secondary')
     })
   })
@@ -323,7 +340,6 @@ function applyMobileClasses() {
   if (!root) return
 
   const allDivs = Array.from(root.querySelectorAll('div'))
-
   const searchInput = root.querySelector('input[placeholder*="Search vendors"]')
   if (!searchInput) return
 
@@ -331,10 +347,8 @@ function applyMobileClasses() {
   if (searchInput.parentElement) searchInput.parentElement.classList.add('vl-mobile-search-wrap')
 
   const topBar = allDivs.find(el =>
-    el.style.position === 'sticky' &&
-    el.style.top === '0px' &&
-    el.style.height === '60px' &&
-    el.style.justifyContent === 'space-between'
+    el.style.position === 'sticky' && el.style.top === '0px' &&
+    el.style.height === '60px' && el.style.justifyContent === 'space-between'
   )
 
   if (topBar) {
@@ -344,10 +358,8 @@ function applyMobileClasses() {
   }
 
   const filterBar = allDivs.find(el =>
-    el.contains(searchInput) &&
-    el.style.justifyContent === 'space-between' &&
-    el.style.flexWrap === 'wrap' &&
-    el.style.padding.includes('32px')
+    el.contains(searchInput) && el.style.justifyContent === 'space-between' &&
+    el.style.flexWrap === 'wrap' && el.style.padding.includes('32px')
   )
 
   if (filterBar) {
@@ -360,30 +372,24 @@ function applyMobileClasses() {
       if (categories) categories.classList.add('vl-mobile-categories')
     }
     if (children[1]) children[1].classList.add('vl-mobile-filter-right')
-
     const main = filterBar.nextElementSibling
     if (main?.tagName === 'DIV') main.classList.add('vl-mobile-main')
   }
 
   const statsGrid = allDivs.find(el =>
-    el.style.display === 'grid' &&
-    el.style.gridTemplateColumns === 'repeat(4, 1fr)' &&
-    el.children.length === 4
+    el.style.display === 'grid' && el.style.gridTemplateColumns === 'repeat(4, 1fr)' && el.children.length === 4
   )
   if (statsGrid) statsGrid.classList.add('vl-mobile-stats')
 
   const vendorGrid = allDivs.find(el =>
-    el.style.display === 'grid' &&
-    el.style.gridTemplateColumns.includes('minmax(290px')
+    el.style.display === 'grid' && el.style.gridTemplateColumns.includes('minmax(290px')
   )
   if (vendorGrid) vendorGrid.classList.add('vl-mobile-vendor-grid')
 
   markListRows(root, allDivs)
 
   Array.from(root.querySelectorAll('button')).forEach(button => {
-    if ((button.textContent || '').includes('Action Centre')) {
-      button.classList.add('vl-mobile-action-centre')
-    }
+    if ((button.textContent || '').includes('Action Centre')) button.classList.add('vl-mobile-action-centre')
   })
 }
 
@@ -396,11 +402,9 @@ export default function MobileResponsive() {
 
     const run = () => window.requestAnimationFrame(applyMobileClasses)
     run()
-
     const observer = new MutationObserver(run)
     const root = document.getElementById('root')
     if (root) observer.observe(root, { childList: true, subtree: true })
-
     window.addEventListener('resize', run)
     const timer = window.setInterval(run, 750)
 
