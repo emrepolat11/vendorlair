@@ -33,6 +33,8 @@ export default async function handler(req, res) {
     '.snapshotWrap{max-width:734px;margin-left:-4%;width:108%}'
   );
 
+  html = html.replace('href="/app">Log in', 'href="/app?mode=login">Log in');
+
   const themeCss = `<style>
 .theme-toggle{width:36px;height:36px;padding:0;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:transparent;color:#F0EDE6;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .theme-toggle .moon{display:none}
