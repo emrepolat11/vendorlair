@@ -11,7 +11,7 @@ function daysUntil(dateStr) {
   return Math.ceil((end - now) / 86400000);
 }
 
-function actionBy(expiry, noticeDays = DEFAULT_NOTICE_DAYS) {
+function decisionDate(expiry, noticeDays = DEFAULT_NOTICE_DAYS) {
   if (!expiry) return null;
   const d = new Date(`${expiry}T12:00:00`);
   d.setDate(d.getDate() - noticeDays);
@@ -19,12 +19,12 @@ function actionBy(expiry, noticeDays = DEFAULT_NOTICE_DAYS) {
 }
 
 function health(v) {
-  const action = actionBy(v.contract_expiry);
-  const actionDays = action ? Math.ceil((action - new Date()) / 86400000) : null;
-  if ((actionDays !== null && actionDays < 0) || (v.contract_expiry && daysUntil(v.contract_expiry) < 0)) {
+  const decision = decisionDate(v.contract_expiry);
+  const decisionDays = decision ? Math.ceil((decision - new Date()) / 86400000) : null;
+  if ((decisionDays !== null && decisionDays < 0) || (v.contract_expiry && daysUntil(v.contract_expiry) < 0)) {
     return { label: "Action required", color: "#FF6B6B" };
   }
-  if ((actionDays !== null && actionDays <= 60) || !v.poc_name || !v.category) {
+  if ((decisionDays !== null && decisionDays <= 60) || !v.poc_name || !v.category) {
     return { label: "Attention needed", color: "#F59F00" };
   }
   return { label: "Healthy", color: "#69DB7C" };
@@ -75,7 +75,7 @@ export default function PreviewEnhancements() {
   }, []);
 
   const summary = useMemo(() => {
-    const rows = vendors.map(v => ({ ...v, _health: health(v), _action: actionBy(v.contract_expiry) }));
+    const rows = vendors.map(v => ({ ...v, _health: health(v), _decision: decisionDate(v.contract_expiry) }));
     return {
       rows,
       action: rows.filter(v => v._health.label === "Action required").length,
@@ -85,13 +85,13 @@ export default function PreviewEnhancements() {
   }, [vendors]);
 
   const exportCsv = () => {
-    const headers = ["Vendor","Status","Health","Category","Country","City","Contact","Contact email","Contract start","Contract expiry","Action by (90d default)","Rating","Notes"];
+    const headers = ["Vendor","Status","Health","Category","Country","City","Contact","Contact email","Contract start","Contract expiry","Decision needed by (90d default)","Rating","Notes"];
     const lines = [headers.map(csvEscape).join(",")];
     summary.rows.forEach(v => {
       lines.push([
         v.name, v.status, v._health.label, v.category, v.country, v.city,
         v.poc_name, v.poc_email, v.contract_start, v.contract_expiry,
-        v._action ? v._action.toISOString().slice(0,10) : "", v.rating, v.notes,
+        v._decision ? v._decision.toISOString().slice(0,10) : "", v.rating, v.notes,
       ].map(csvEscape).join(","));
     });
     const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -151,18 +151,18 @@ export default function PreviewEnhancements() {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {summary.rows
               .filter(v => v._health.label !== "Healthy")
-              .sort((a,b) => (a._action?.getTime() || Infinity) - (b._action?.getTime() || Infinity))
+              .sort((a,b) => (a._decision?.getTime() || Infinity) - (b._decision?.getTime() || Infinity))
               .map(v => {
                 const h = v._health;
                 const missing = [!v.poc_name && "contact", !v.category && "category"].filter(Boolean);
-                const actionDate = v._action ? v._action.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : null;
+                const decision = v._decision ? v._decision.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : null;
                 return (
                   <div key={v.id} style={{ border: "1px solid rgba(255,255,255,.07)", borderRadius: 10, padding: 11, background: "rgba(255,255,255,.025)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
                       <div style={{ fontWeight: 700, fontSize: 13 }}>{v.name}</div>
                       <div style={{ fontSize: 10, color: h.color, whiteSpace: "nowrap" }}>{h.label}</div>
                     </div>
-                    {actionDate && <div style={{ fontSize: 11, color: "rgba(240,237,230,.62)", marginTop: 4 }}>Act by {actionDate} <span style={{ color: "rgba(240,237,230,.28)" }}>(90d default)</span></div>}
+                    {decision && <div style={{ fontSize: 11, color: "rgba(240,237,230,.62)", marginTop: 4 }}>Decision needed by {decision} <span style={{ color: "rgba(240,237,230,.28)" }}>(90d default)</span></div>}
                     {v.contract_expiry && <div style={{ fontSize: 10, color: "rgba(240,237,230,.34)", marginTop: 2 }}>Contract expires {new Date(`${v.contract_expiry}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>}
                     {missing.length > 0 && <div style={{ fontSize: 10, color: "rgba(240,237,230,.34)", marginTop: 2 }}>Missing {missing.join(" and ")}</div>}
                   </div>
