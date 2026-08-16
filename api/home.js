@@ -49,6 +49,8 @@ html[data-theme="light"] .bottom,html[data-theme="light"] footer{border-color:rg
 html[data-theme="light"] .theme-toggle{border-color:rgba(25,25,34,.11);color:#191922;background:rgba(25,25,34,.03)}
 html[data-theme="light"] .theme-toggle .sun{display:none}
 html[data-theme="light"] .theme-toggle .moon{display:inline}
+html[data-theme="light"] .snapshot{filter:invert(1) hue-rotate(180deg) saturate(.92) brightness(1.04);box-shadow:0 28px 70px rgba(31,31,45,.15)}
+html[data-theme="light"] .snapshotGlow{background:radial-gradient(circle,rgba(108,99,255,.10),transparent 68%)}
 .stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:26px 0 24px;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:24px}
 .stats-strip .stat{text-align:center}.stats-strip .num{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;line-height:1}.stats-strip .label{font-size:11px;color:rgba(240,237,230,.42);margin-top:5px}
 html[data-theme="light"] .stats-strip{border-color:rgba(25,25,34,.09)}html[data-theme="light"] .stats-strip .label{color:rgba(25,25,34,.5)}
@@ -57,7 +59,7 @@ html[data-theme="light"] .stats-strip{border-color:rgba(25,25,34,.09)}html[data-
   html = html.replace('</head>', `${themeCss}</head>`);
   html = html.replace('<div class="navactions">', '<div class="navactions"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"><span class="sun">☀️</span><span class="moon">🌙</span></button>');
 
-  const statsStrip = `<section class="stats-strip" aria-label="VendorLair statistics"><div class="stat"><div class="num">500</div><div class="label">Vendors tracked</div></div><div class="stat"><div class="num">50</div><div class="label">Companies onboard</div></div><div class="stat"><div class="num">8</div><div class="label">Countries</div></div><div class="stat"><div class="num">&lt;3 min</div><div class="label">To add your first vendor</div></div></section>`;
+  const statsStrip = `<section class="stats-strip" aria-label="VendorLair statistics"><div class="stat"><div class="num">500+</div><div class="label">Vendors tracked</div></div><div class="stat"><div class="num">50+</div><div class="label">Companies onboard</div></div><div class="stat"><div class="num">8</div><div class="label">Countries</div></div><div class="stat"><div class="num">&lt;3 min</div><div class="label">To add your first vendor</div></div></section>`;
   html = html.replace('<section class="section" id="features">', `${statsStrip}<section class="section" id="features">`);
 
   const themeJs = `<script>(function(){var r=document.documentElement,t=document.getElementById('themeToggle'),s='dark';try{s=localStorage.getItem('vendorlair-theme')||'dark'}catch(e){}r.dataset.theme=s==='light'?'light':'dark';if(t)t.onclick=function(){r.dataset.theme=r.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('vendorlair-theme',r.dataset.theme)}catch(e){}}})();</script>`;
