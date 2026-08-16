@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
   html = html.replace(
     '.snapshotWrap{max-width:680px;margin:0 auto}',
-    '.snapshotWrap{max-width:680px;margin:0 auto;width:100%}'
+    '.snapshotWrap{max-width:734px;margin-left:-4%;width:108%}'
   );
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
