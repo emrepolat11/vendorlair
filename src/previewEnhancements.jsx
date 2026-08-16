@@ -119,7 +119,7 @@ export default function PreviewEnhancements() {
       </button>
 
       {open && (
-        <div style={{
+        <div className="vl-action-centre-panel" style={{
           position: "fixed", right: 20, bottom: 72, zIndex: 2999, width: "min(420px, calc(100vw - 28px))",
           maxHeight: "72vh", overflowY: "auto", background: "#111118",
           border: "1px solid rgba(255,255,255,.10)", borderRadius: 16,
