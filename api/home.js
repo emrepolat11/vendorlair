@@ -1,9 +1,6 @@
 export default async function handler(req, res) {
-  const protocol = req.headers['x-forwarded-proto'] || 'https';
-  const host = req.headers.host;
-  const sourceUrl = `${protocol}://${host}/index.html`;
-
-  const response = await fetch(sourceUrl);
+  const sourceUrl = 'https://raw.githubusercontent.com/emrepolat11/vendorlair/feature/action-centre-implement/index.html';
+  const response = await fetch(sourceUrl, { cache: 'no-store' });
   let html = await response.text();
 
   html = html.replace(
