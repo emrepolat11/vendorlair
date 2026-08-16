@@ -210,6 +210,14 @@ const MOBILE_CSS = `
     font-size: 13px !important;
     white-space: nowrap !important;
   }
+
+  .vl-action-centre-panel {
+    left: 14px !important;
+    right: 14px !important;
+    width: auto !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
 }
 
 @media (max-width: 420px) {
