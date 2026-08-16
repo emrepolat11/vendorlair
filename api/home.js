@@ -33,6 +33,10 @@ export default async function handler(req, res) {
     '.snapshotWrap{max-width:734px;margin-left:-4%;width:108%}'
   );
 
+  html = html.replace('500+', '50');
+  html = html.replace('40+', '8');
+  html = html.replace('10,000+', '500');
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
