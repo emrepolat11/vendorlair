@@ -1,6 +1,8 @@
 {
+  "redirects": [
+    { "source": "/", "destination": "/api/home", "permanent": false }
+  ],
   "rewrites": [
-    { "source": "/", "destination": "/api/home" },
     { "source": "/app", "destination": "/app.html" },
     { "source": "/app/(.*)", "destination": "/app.html" }
   ],
