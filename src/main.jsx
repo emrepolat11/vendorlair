@@ -4,6 +4,7 @@ import App from './app'
 import PreviewEnhancements from './previewEnhancements'
 import PlanLimits from './planLimits'
 import MobileResponsive from './mobileResponsive'
+import ThemeMode from './themeMode'
 
 const authMode = new URLSearchParams(window.location.search).get('mode')
 if (authMode === 'login' || authMode === 'signup') {
@@ -12,6 +13,7 @@ if (authMode === 'login' || authMode === 'signup') {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    <ThemeMode />
     <PlanLimits />
     <App />
     <PreviewEnhancements />
