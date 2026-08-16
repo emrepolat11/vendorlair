@@ -11,6 +11,15 @@ html[data-theme="light"] [style*="background-color: rgb(9, 9, 12)"],
 html[data-theme="light"] [style*="background: #09090C"],
 html[data-theme="light"] [style*="background-color: #09090C"] { background:#F7F7FB !important; background-color:#F7F7FB !important; }
 
+html[data-theme="light"] [style*="background: rgba(9, 9, 12, 0.9)"],
+html[data-theme="light"] [style*="background: rgba(9, 9, 12, 0.90)"],
+html[data-theme="light"] [style*="background: rgba(9, 9, 12, 0.8)"],
+html[data-theme="light"] [style*="background: rgba(9, 9, 12, 0.80)"] {
+  background:rgba(247,247,251,.94) !important;
+  background-color:rgba(247,247,251,.94) !important;
+  border-color:rgba(25,25,34,.09) !important;
+}
+
 html[data-theme="light"] [style*="background: rgb(17, 17, 24)"],
 html[data-theme="light"] [style*="background-color: rgb(17, 17, 24)"],
 html[data-theme="light"] [style*="background: #111118"],
