@@ -35,6 +35,25 @@ export default async function handler(req, res) {
 
   html = html.replace('href="/app">Log in', 'href="/app?mode=login">Log in');
 
+  const socialMeta = `
+<meta name="description" content="Simple vendor management for growing companies. Keep vendor details, renewals, notes and actions in one clean place.">
+<link rel="canonical" href="https://vendorlair.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vendorlair.com/">
+<meta property="og:site_name" content="VendorLair">
+<meta property="og:title" content="VendorLair — Know Your Vendors">
+<meta property="og:description" content="Simple vendor management for growing companies. Keep vendor details, renewals, notes and actions in one clean place.">
+<meta property="og:image" content="https://vendorlair.com/api/og">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="VendorLair vendor management dashboard preview">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VendorLair — Know Your Vendors">
+<meta name="twitter:description" content="Simple vendor management for growing companies. Keep vendor details, renewals, notes and actions in one clean place.">
+<meta name="twitter:image" content="https://vendorlair.com/api/og">
+<meta name="twitter:image:alt" content="VendorLair vendor management dashboard preview">
+`;
+
   const themeCss = `<style>
 .theme-toggle{width:36px;height:36px;padding:0;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:transparent;color:#F0EDE6;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .theme-toggle .moon{display:none}
@@ -58,7 +77,7 @@ html[data-theme="light"] .snapshotGlow{background:radial-gradient(circle,rgba(10
 html[data-theme="light"] .stats-strip{border-color:rgba(25,25,34,.09)}html[data-theme="light"] .stats-strip .label{color:rgba(25,25,34,.5)}
 @media(max-width:520px){.stats-strip{grid-template-columns:repeat(2,1fr);gap:20px 12px}.stats-strip .num{font-size:30px}}
 </style>`;
-  html = html.replace('</head>', `${themeCss}</head>`);
+  html = html.replace('</head>', `${socialMeta}${themeCss}</head>`);
   html = html.replace('<div class="navactions">', '<div class="navactions"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"><span class="sun">☀️</span><span class="moon">🌙</span></button>');
 
   const statsStrip = `<section class="stats-strip" aria-label="VendorLair statistics"><div class="stat"><div class="num">500+</div><div class="label">Vendors tracked</div></div><div class="stat"><div class="num">50+</div><div class="label">Companies onboard</div></div><div class="stat"><div class="num">8</div><div class="label">Countries</div></div><div class="stat"><div class="num">&lt;3 min</div><div class="label">To add your first vendor</div></div></section>`;
