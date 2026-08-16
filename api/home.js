@@ -23,6 +23,16 @@ export default async function handler(req, res) {
     '.section{padding:36px 0 65px}'
   );
 
+  html = html.replace(
+    '.snapshotWrap{position:relative}',
+    '.snapshotWrap{position:relative;width:120%;margin-left:-10%}'
+  );
+
+  html = html.replace(
+    '.snapshotWrap{max-width:680px;margin:0 auto}',
+    '.snapshotWrap{max-width:680px;margin:0 auto;width:100%}'
+  );
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
