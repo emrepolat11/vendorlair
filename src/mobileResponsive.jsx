@@ -126,6 +126,81 @@ const MOBILE_CSS = `
     max-width: 100% !important;
   }
 
+  .vl-mobile-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .vl-mobile-list-row {
+    display: grid !important;
+    grid-template-columns: 40px minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 10px !important;
+    row-gap: 6px !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .vl-mobile-list-row > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .vl-mobile-list-accent {
+    position: absolute !important;
+  }
+
+  .vl-mobile-list-avatar {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+  }
+
+  .vl-mobile-list-name {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 15px !important;
+  }
+
+  .vl-mobile-list-status {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    white-space: nowrap !important;
+  }
+
+  .vl-mobile-list-category {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .vl-mobile-list-edit {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    width: auto !important;
+    white-space: nowrap !important;
+  }
+
+  .vl-mobile-list-secondary {
+    display: none !important;
+  }
+
   .vl-mobile-action-centre {
     right: 14px !important;
     left: auto !important;
@@ -156,6 +231,84 @@ const MOBILE_CSS = `
   }
 }
 `
+
+const CATEGORY_LABELS = [
+  'Marketing','Finance','Legal','Logistics','Design','Consulting','IT Support',
+  'Accounting & Tax','Payroll','Advertising & Media','Real Estate & Office',
+  'Insurance','Energy & Utilities','Quality & Compliance','Other'
+]
+
+const STATUS_LABELS = ['Active', 'Inactive', 'On hold']
+
+function markListRows(root, allDivs) {
+  const listContainer = allDivs.find(el =>
+    el.style.display === 'flex' &&
+    el.style.flexDirection === 'column' &&
+    el.style.borderRadius === '12px' &&
+    el.style.overflow === 'hidden' &&
+    el.children.length > 0 &&
+    Array.from(el.children).some(child => child.style?.alignItems === 'center' && child.style?.gap === '12px')
+  )
+
+  if (!listContainer) return
+  listContainer.classList.add('vl-mobile-list')
+
+  Array.from(listContainer.children).forEach(row => {
+    if (row.tagName !== 'DIV' || row.style.alignItems !== 'center') return
+    row.classList.add('vl-mobile-list-row')
+
+    const children = Array.from(row.children)
+    let nameTagged = false
+    let statusTagged = false
+    let categoryTagged = false
+    let editTagged = false
+
+    children.forEach(child => {
+      child.classList.remove(
+        'vl-mobile-list-accent','vl-mobile-list-avatar','vl-mobile-list-name',
+        'vl-mobile-list-status','vl-mobile-list-category','vl-mobile-list-edit','vl-mobile-list-secondary'
+      )
+
+      const text = (child.textContent || '').trim()
+
+      if (child.style.position === 'absolute' && child.style.width === '2px') {
+        child.classList.add('vl-mobile-list-accent')
+        return
+      }
+
+      if ((child.style.width === '30px' && child.style.height === '30px') || child.style.flexShrink === '0') {
+        child.classList.add('vl-mobile-list-avatar')
+        return
+      }
+
+      if (!nameTagged && child.style.fontFamily.includes('Cormorant')) {
+        child.classList.add('vl-mobile-list-name')
+        nameTagged = true
+        return
+      }
+
+      if (!statusTagged && STATUS_LABELS.includes(text)) {
+        child.classList.add('vl-mobile-list-status')
+        statusTagged = true
+        return
+      }
+
+      if (!categoryTagged && CATEGORY_LABELS.some(label => text.includes(label))) {
+        child.classList.add('vl-mobile-list-category')
+        categoryTagged = true
+        return
+      }
+
+      if (!editTagged && child.tagName === 'BUTTON' && text === 'Edit') {
+        child.classList.add('vl-mobile-list-edit')
+        editTagged = true
+        return
+      }
+
+      child.classList.add('vl-mobile-list-secondary')
+    })
+  })
+}
 
 function applyMobileClasses() {
   const root = document.getElementById('root')
@@ -216,6 +369,8 @@ function applyMobileClasses() {
     el.style.gridTemplateColumns.includes('minmax(290px')
   )
   if (vendorGrid) vendorGrid.classList.add('vl-mobile-vendor-grid')
+
+  markListRows(root, allDivs)
 
   Array.from(root.querySelectorAll('button')).forEach(button => {
     if ((button.textContent || '').includes('Action Centre')) {
