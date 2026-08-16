@@ -33,10 +33,6 @@ export default async function handler(req, res) {
     '.snapshotWrap{max-width:734px;margin-left:-4%;width:108%}'
   );
 
-  html = html.replace('500+', '50');
-  html = html.replace('40+', '8');
-  html = html.replace('10,000+', '500');
-
   const themeCss = `<style>
 .theme-toggle{width:36px;height:36px;padding:0;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:transparent;color:#F0EDE6;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .theme-toggle .moon{display:none}
@@ -53,9 +49,16 @@ html[data-theme="light"] .bottom,html[data-theme="light"] footer{border-color:rg
 html[data-theme="light"] .theme-toggle{border-color:rgba(25,25,34,.11);color:#191922;background:rgba(25,25,34,.03)}
 html[data-theme="light"] .theme-toggle .sun{display:none}
 html[data-theme="light"] .theme-toggle .moon{display:inline}
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:26px 0 24px;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:24px}
+.stats-strip .stat{text-align:center}.stats-strip .num{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;line-height:1}.stats-strip .label{font-size:11px;color:rgba(240,237,230,.42);margin-top:5px}
+html[data-theme="light"] .stats-strip{border-color:rgba(25,25,34,.09)}html[data-theme="light"] .stats-strip .label{color:rgba(25,25,34,.5)}
+@media(max-width:520px){.stats-strip{grid-template-columns:repeat(2,1fr);gap:20px 12px}.stats-strip .num{font-size:30px}}
 </style>`;
   html = html.replace('</head>', `${themeCss}</head>`);
   html = html.replace('<div class="navactions">', '<div class="navactions"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"><span class="sun">☀️</span><span class="moon">🌙</span></button>');
+
+  const statsStrip = `<section class="stats-strip" aria-label="VendorLair statistics"><div class="stat"><div class="num">500</div><div class="label">Vendors tracked</div></div><div class="stat"><div class="num">50</div><div class="label">Companies onboard</div></div><div class="stat"><div class="num">8</div><div class="label">Countries</div></div><div class="stat"><div class="num">&lt;3 min</div><div class="label">To add your first vendor</div></div></section>`;
+  html = html.replace('<section class="section" id="features">', `${statsStrip}<section class="section" id="features">`);
 
   const themeJs = `<script>(function(){var r=document.documentElement,t=document.getElementById('themeToggle'),s='dark';try{s=localStorage.getItem('vendorlair-theme')||'dark'}catch(e){}r.dataset.theme=s==='light'?'light':'dark';if(t)t.onclick=function(){r.dataset.theme=r.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('vendorlair-theme',r.dataset.theme)}catch(e){}}})();</script>`;
   html = html.replace('</body>', `${themeJs}</body>`);
