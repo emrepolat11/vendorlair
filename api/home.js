@@ -8,6 +8,21 @@ export default async function handler(req, res) {
     '<h1>Know every<br>vendor in<br>your <em>lair.</em></h1>'
   );
 
+  html = html.replace(
+    'padding-top:98px;padding-bottom:70px',
+    'padding-top:98px;padding-bottom:24px'
+  );
+
+  html = html.replace(
+    '.section{padding:95px 0}',
+    '.section{padding:48px 0 95px}'
+  );
+
+  html = html.replace(
+    '.section{padding:65px 0}',
+    '.section{padding:36px 0 65px}'
+  );
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
