@@ -535,6 +535,17 @@ function AuthScreen({ onAuth }) {
 
   const switchMode = (next) => { setMode(next); setError(""); setSuccess(""); };
 
+  const resendConfirmation = async () => {
+    if (!email.trim()) { setError("Enter your email address first."); return; }
+    setError(""); setLoading(true);
+    try {
+      await authRequest(`resend?redirect_to=${encodeURIComponent(window.location.origin + "/app")}`, { type: "signup", email: email.trim() });
+      setSuccess("If your account is awaiting confirmation, a new verification email has been requested. Check your inbox and spam folder.");
+    } catch (e) {
+      setError(e.message.includes("rate limit") ? "Email sending is temporarily limited. Please try again later." : e.message);
+    } finally { setLoading(false); }
+  };
+
   const submit = async () => {
     setError(""); setLoading(true);
     try {
@@ -542,11 +553,11 @@ function AuthScreen({ onAuth }) {
         const data = await authRequest("token?grant_type=password", { email, password });
         onAuth(data.access_token, data.user);
       } else if (mode === "signup") {
-        await authRequest("signup", { email, password, data: { company_name: company } });
+        await authRequest(`signup?redirect_to=${encodeURIComponent(window.location.origin + "/app")}`, { email, password, data: { company_name: company } });
         setSuccess("Check your email to confirm your account, then log in.");
         setMode("login");
       } else if (mode === "reset") {
-        const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(window.location.origin + "/app")}`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
           body: JSON.stringify({ email }),
@@ -554,7 +565,7 @@ function AuthScreen({ onAuth }) {
         if (!res.ok) { const d = await res.json(); throw new Error(d.msg || "Request failed"); }
         setSuccess("If that email is registered, a reset link is on its way.");
       }
-    } catch (e) { setError(e.message); }
+    } catch (e) { setError(e.message.includes("Email not confirmed") ? "Please verify your email before logging in. You can resend the verification email below." : e.message); }
     finally { setLoading(false); }
   };
 
@@ -626,6 +637,11 @@ function AuthScreen({ onAuth }) {
               {mode === "reset" ? "Back to log in" : mode === "login" ? "Sign up free" : "Log in"}
             </span>
           </div>
+          {mode === "login" && (
+            <div style={{ textAlign: "center", marginTop: 12 }}>
+              <button type="button" disabled={loading} onClick={resendConfirmation} style={{ background: "none", border: "none", color: "#ACA6FF", fontSize: 12, cursor: "pointer", opacity: loading ? 0.6 : 1 }}>Resend verification email</button>
+            </div>
+          )}
           {mode === "login" && (
             <div style={{ textAlign: "center", marginTop: 10, fontSize: 12, color: "rgba(240,237,230,0.22)" }}>
               Free up to 10 vendors · $3/month for unlimited
