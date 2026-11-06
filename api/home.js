@@ -86,6 +86,11 @@ html[data-theme="light"] .stats-strip{border-color:rgba(25,25,34,.09)}html[data-
   const themeJs = `<script>(function(){var r=document.documentElement,t=document.getElementById('themeToggle'),s='dark';try{s=localStorage.getItem('vendorlair-theme')||'dark'}catch(e){}r.dataset.theme=s==='light'?'light':'dark';if(t)t.onclick=function(){r.dataset.theme=r.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('vendorlair-theme',r.dataset.theme)}catch(e){}}})();</script>`;
   html = html.replace('</body>', `${themeJs}</body>`);
 
+  // Supabase's default Site URL can point to the landing page.
+  // Forward only auth callback fragments to the app so password recovery works.
+  const authCallbackRedirect = '<script>(function(){var h=location.hash;if(h && /(?:^#|&)type=(?:recovery|signup|invite|email_change)(?:&|$)/.test(h)){location.replace("/app"+h)}})();</script>';
+  html = html.replace('</head>', authCallbackRedirect + '</head>');
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
