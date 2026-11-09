@@ -1,15 +1,85 @@
 {
   "redirects": [
-    { "source": "/", "destination": "/api/home", "permanent": false }
+    {
+      "source": "/api/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/api/landing",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pricing.html",
+      "destination": "/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/guides/vendor-management.html",
+      "destination": "/guides/vendor-management",
+      "permanent": true
+    },
+    {
+      "source": "/guides/contract-renewal-tracking.html",
+      "destination": "/guides/contract-renewal-tracking",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/app", "destination": "/app.html" },
-    { "source": "/app/(.*)", "destination": "/app.html" }
+    {
+      "source": "/pricing",
+      "destination": "/pricing.html"
+    },
+    {
+      "source": "/guides/vendor-management",
+      "destination": "/guides/vendor-management.html"
+    },
+    {
+      "source": "/guides/contract-renewal-tracking",
+      "destination": "/guides/contract-renewal-tracking.html"
+    },
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/app/(.*)",
+      "destination": "/app.html"
+    }
   ],
   "headers": [
     {
       "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/app(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/preview-landing.html",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
     }
   ]
 }
