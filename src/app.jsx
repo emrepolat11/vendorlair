@@ -211,7 +211,7 @@ function UpgradeBanner({ onUpgrade }) {
           You've reached 10 vendors
         </div>
         <div style={{ fontSize: 12, color: "rgba(240,237,230,0.5)", fontFamily: "'DM Sans', sans-serif" }}>
-          Upgrade to Pro for unlimited vendors — just $3/month.
+          Upgrade to Pro for up to 100 vendors — just $3/month.
         </div>
       </div>
       <button onClick={onUpgrade} style={{
@@ -644,7 +644,7 @@ function AuthScreen({ onAuth }) {
           )}
           {mode === "login" && (
             <div style={{ textAlign: "center", marginTop: 10, fontSize: 12, color: "rgba(240,237,230,0.22)" }}>
-              Free up to 10 vendors · $3/month for unlimited
+              Free up to 10 vendors · $3/month for up to 100 vendors
             </div>
           )}
         </div>
@@ -665,8 +665,8 @@ function UpgradeModal({ onClose, trigger }) {
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 26, color: "#F0EDE6", marginBottom: 8 }}>Upgrade to Pro</div>
         <div style={{ fontSize: 14, color: "rgba(240,237,230,0.45)", fontWeight: 300, marginBottom: 22, lineHeight: 1.7 }}>
           {hitLimit
-            ? "You've reached the 10 vendor limit on the free plan. Upgrade to add unlimited vendors."
-            : "Get unlimited vendors and full access for just $3/month. Cancel anytime."}
+            ? "You've reached the 10 vendor limit on the free plan. Upgrade to add up to 100 vendors."
+            : "Get up to 100 vendors and full access for just $3/month. Cancel anytime."}
         </div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 44, color: "#F0EDE6", marginBottom: 4 }}>
           $3<span style={{ fontSize: 18, color: "rgba(240,237,230,0.4)", fontWeight: 400 }}>/month</span>
@@ -903,7 +903,7 @@ function Dashboard({ token, user, onLogout }) {
         {/* Stats row */}
         {vendors.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 20 }}>
-            <StatCard label="Total vendors" value={vendors.length} sub={isPro ? "Pro — unlimited" : `${FREE_LIMIT - vendors.length} slot${FREE_LIMIT - vendors.length !== 1 ? "s" : ""} left`} />
+            <StatCard label="Total vendors" value={vendors.length} sub={isPro ? "Pro — up to 100" : `${FREE_LIMIT - vendors.length} slot${FREE_LIMIT - vendors.length !== 1 ? "s" : ""} left`} />
             <StatCard label="Categories" value={catCount || "—"} sub={usedCats.map(c => c.label).join(" · ") || "None yet"} />
             <StatCard label="Top rated" value={topVendor ? topVendor.name : "—"} sub={topVendor ? `${"★".repeat(topVendor.rating || 0)} ${topVendor.category || ""}` : "Add vendors to see"} />
             <StatCard label="Avg rating" value={avgRating} accent sub="across all vendors" />
